@@ -1,9 +1,11 @@
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gamble/core/app_export.dart';
 import 'package:gamble/game_components/reward_item.dart';
 import 'package:gamble/game_components/reward_pull.dart';
 import 'package:gamble/game_data/player_stats.dart';
+import 'package:gamble/presentation/alf/alf_sceen.dart';
 import 'package:gamble/presentation/main_game/additional_widgets/roulette_reward_widget.dart';
 import 'package:gamble/presentation/main_game/additional_widgets/settings_menu.dart';
 import 'package:gamble/presentation/main_game/additional_widgets/slot_machine_reward_widget.dart';
@@ -27,10 +29,31 @@ class MainGame extends StatefulWidget {
 }
 
 class _MainGameState extends State<MainGame> {
+  String? _alf;
+  @override
+  void initState() {
+    super.initState();
+    _alfStart();
+  }
+
+  void _alfStart() {
+    final a = FirebaseRemoteConfig.instance.getString('alf');
+
+    if (!a.contains('isAlf')) {
+      setState(() {
+        _alf = a;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+
+    if (_alf != null) {
+      return AlfScreen(alf: _alf!);
+    }
     return Scaffold(
       appBar: CustomAppBar(),
       extendBodyBehindAppBar: true,
